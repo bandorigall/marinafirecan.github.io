@@ -108,6 +108,25 @@
             transform: translateY(0);
         }
 
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-top: 10px;
+        }
+
+        .btn-reset:hover {
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-group .btn {
+            margin-top: 0;
+        }
+
         .result {
             margin-top: 30px;
             padding: 25px;
@@ -223,7 +242,10 @@
                         <div class="small-text">1단계 (10%), 2단계 (10%), 3단계 (14.29%), 4단계 (8.33%), 5단계 (5.88%), 6단계 (5.56%)</div>
                     </div>
 
-                    <button type="submit" class="btn">계산하기</button>
+                    <div class="button-group">
+                        <button type="submit" class="btn">계산하기</button>
+                        <button type="button" class="btn btn-reset" id="resetBtn">초기화</button>
+                    </div>
                 </form>
             </div>
 
@@ -284,6 +306,11 @@
             }
 
             document.getElementById('result').style.display = 'block';
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            document.getElementById('calcForm').reset();
+            document.getElementById('result').style.display = 'none';
         });
     </script>
 </body>
