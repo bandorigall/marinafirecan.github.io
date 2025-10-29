@@ -247,7 +247,17 @@
                     <div class="input-group">
                         <label for="stage">스테이지 (선택사항)</label>
                         <input type="number" id="stage" min="1" max="6" placeholder="1-6 (기본값: 6)">
-                        <div class="small-text">1단계 (10%), 2단계 (10%), 3단계 (14.29%), 4단계 (8.33%), 5단계 (5.88%), 6단계 (5.56%)</div>
+                        <div class="small-text"></div>
+
+                        <script>
+                            const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
+                            const div = document.querySelector('.small-text');
+
+                            // 단계별로 퍼센트 문자열 생성
+                            const html = EP.map((v, i) => `${i+1}단계 (${(v * 100).toFixed(2)}%)`).join(', ');
+
+                            div.textContent = html;
+                        </script>
                     </div>
 
                     <div class="button-group">
@@ -285,7 +295,7 @@
     </div>
 
     <script>
-        const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
+        // const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
 
         document.getElementById('calcForm').addEventListener('submit', function(e) {
             e.preventDefault();
