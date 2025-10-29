@@ -211,6 +211,14 @@
             color: #856404;
             text-align: center;
         }
+
+        .footer {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 0.75em;
+            color: #999;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -270,10 +278,14 @@
                 </div>
             </div>
         </div>
+        
+        <div class="footer">
+            made by Bangbung Kim
+        </div>
     </div>
 
     <script>
-        const EP = [3/40, 5/50, 10/70, 10/120, 10/170, 10/180];
+        const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
 
         document.getElementById('calcForm').addEventListener('submit', function(e) {
             e.preventDefault();
