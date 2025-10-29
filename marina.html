@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마리나 교환소 불캔 확률 계산기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            grid-column: 1 / -1;
+        }
+
+        .left-panel, .right-panel {
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            margin: 12px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .result-item strong {
+            color: #667eea;
+        }
+
+        .conclusion {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .conclusion.continue {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #047857;
+        }
+
+        .conclusion.stop {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #c2410c;
+        }
+
+        .small-text {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .input-hint {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .stage-info {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #856404;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 마리나 교환소 불캔 확률 계산기</h1>
+        
+        <div class="content-wrapper">
+            <div class="left-panel">
+                <div class="stage-info">
+                    💡 스테이지를 입력하지 않으면 자동으로 6단계로 계산됩니다
+                </div>
+
+                <form id="calcForm">
+                    <div class="input-group">
+                        <label for="bc_now">현재 불캔 개수</label>
+                        <input type="number" id="bc_now" required min="0" placeholder="예: 8">
+                        <div class="input-hint">こほうび箱の中身 터치 후 남아있는 불캔 개수</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="nkr">현재 아이템 개수</label>
+                        <input type="number" id="nkr" required min="1" placeholder="예: 142">
+                        <div class="input-hint">残り: n/N 에서의 n을 입력</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="stage">스테이지 (선택사항)</label>
+                        <input type="number" id="stage" min="1" max="6" placeholder="1-6 (기본값: 6)">
+                        <div class="small-text">1단계 (10%), 2단계 (10%), 3단계 (14.29%), 4단계 (8.33%), 5단계 (5.88%), 6단계 (5.56%)</div>
+                    </div>
+
+                    <button type="submit" class="btn">계산하기</button>
+                </form>
+            </div>
+
+            <div class="right-panel">
+                <div class="result" id="result">
+                    <div class="result-item">
+                        <strong>현재 불캔 개수:</strong> <span id="r_bc_now"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>현재 아이템 개수:</strong> <span id="r_nkr"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>현재 확률:</strong> <span id="r_current_prob"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>일반적인 확률:</strong> <span id="r_general_prob"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>시행 여부:</strong> <span id="r_decision"></span>
+                    </div>
+                    <div class="conclusion" id="conclusion"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const EP = [3/30, 5/50, 10/70, 10/120, 10/170, 10/180];
+
+        document.getElementById('calcForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const bc_now = parseInt(document.getElementById('bc_now').value);
+            const nkr = parseInt(document.getElementById('nkr').value);
+            let stage = parseInt(document.getElementById('stage').value);
+
+            if (isNaN(stage) || stage < 1 || stage > 6) {
+                stage = 6;
+            }
+
+            const current_prob = bc_now / nkr;
+            const general_prob = EP[Math.min(stage, 6) - 1];
+            const decision = current_prob > general_prob;
+
+            document.getElementById('r_bc_now').textContent = bc_now;
+            document.getElementById('r_nkr').textContent = nkr;
+            document.getElementById('r_current_prob').textContent = (current_prob * 100).toFixed(2) + '%';
+            document.getElementById('r_general_prob').textContent = (general_prob * 100).toFixed(2) + '%';
+            document.getElementById('r_decision').textContent = decision ? '✓ 예' : '✗ 아니오';
+
+            const conclusionDiv = document.getElementById('conclusion');
+            if (decision) {
+                conclusionDiv.textContent = '🎯 계속 돌려!';
+                conclusionDiv.className = 'conclusion continue';
+            } else {
+                conclusionDiv.textContent = '➡️ 다음으로 넘어가';
+                conclusionDiv.className = 'conclusion stop';
+            }
+
+            document.getElementById('result').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
