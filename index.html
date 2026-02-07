@@ -22,6 +22,7 @@
         }
 
         .container {
+            position: relative; /* 사용방법 버튼 배치를 위해 추가 */
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 40px;
@@ -29,6 +30,29 @@
             max-width: 1200px;
             width: 100%;
             backdrop-filter: blur(10px);
+        }
+
+        /* 사용방법 버튼 스타일 추가 */
+        .help-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 700;
+            font-size: 0.9em;
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .help-btn:hover {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
         }
 
         .content-wrapper {
@@ -41,6 +65,19 @@
         @media (max-width: 768px) {
             .content-wrapper {
                 grid-template-columns: 1fr;
+            }
+            
+            /* 모바일에서 사용방법 버튼 위치 조정 */
+            .help-btn {
+                position: static;
+                display: block;
+                width: fit-content;
+                margin: 0 auto 15px auto;
+                text-align: center;
+            }
+
+            .container {
+                padding: 30px 20px;
             }
         }
 
@@ -257,6 +294,8 @@
 </head>
 <body>
     <div class="container">
+        <a href="https://gall.dcinside.com/mgallery/board/view?id=bang_dream&no=5727788" target="_blank" class="help-btn">사용방법</a>
+
         <h1>🔥 마리나 교환소 불캔 확률 계산기</h1>
         
         <div class="content-wrapper">
