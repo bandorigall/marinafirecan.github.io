@@ -219,6 +219,40 @@
             color: #999;
             font-style: italic;
         }
+
+        /* 모드 선택 스위치 스타일 */
+        .mode-selector {
+            display: flex;
+            background: #e0e0e0;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+
+        .mode-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .mode-option input {
+            display: none;
+        }
+
+        .mode-option span {
+            display: block;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .mode-option input:checked + span {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -232,6 +266,20 @@
                 </div>
 
                 <form id="calcForm">
+                    <div class="input-group">
+                        <label>이벤트 모드 선택</label>
+                        <div class="mode-selector">
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="vs" checked>
+                                <span>대반</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="team">
+                                <span>팀대반</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="input-group">
                         <label for="bc_now">현재 불캔 개수</label>
                         <input type="number" id="bc_now" required min="0" placeholder="예: 8">
@@ -247,17 +295,7 @@
                     <div class="input-group">
                         <label for="stage">스테이지 (선택사항)</label>
                         <input type="number" id="stage" min="1" max="6" placeholder="1-6 (기본값: 6)">
-                        <div class="small-text"></div>
-
-                        <script>
-                            const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
-                            const div = document.querySelector('.small-text');
-
-                            // 단계별로 퍼센트 문자열 생성
-                            const html = EP.map((v, i) => `${i+1}단계 (${(v * 100).toFixed(2)}%)`).join(', ');
-
-                            div.textContent = html;
-                        </script>
+                        <div class="small-text" id="prob-display"></div>
                     </div>
 
                     <div class="button-group">
@@ -269,6 +307,9 @@
 
             <div class="right-panel">
                 <div class="result" id="result">
+                    <div class="result-item">
+                        <strong>선택 모드:</strong> <span id="r_mode"></span>
+                    </div>
                     <div class="result-item">
                         <strong>현재 불캔 개수:</strong> <span id="r_bc_now"></span>
                     </div>
@@ -295,28 +336,69 @@
     </div>
 
     <script>
-        // const EP = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
+        // 확률 데이터 정의
+        const EP_TEAM = [3/40, 5/65, 5/90, 5/160, 5/220, 10/230];
+        const EP_VS = [3/40, 5/50, 10/70, 10/120, 10/170, 10/180];
+        
+        const probDisplay = document.getElementById('prob-display');
+        const modeInputs = document.querySelectorAll('input[name="mode"]');
+
+        // 확률 정보 업데이트 함수
+        function updateProbDisplay() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const currentEP = mode === 'team' ? EP_TEAM : EP_VS;
+            
+            const html = currentEP.map((v, i) => `${i+1}단계 (${(v * 100).toFixed(2)}%)`).join(', ');
+            probDisplay.textContent = html;
+        }
+
+        // 초기 로드시 확률 정보 표시
+        updateProbDisplay();
+
+        // 모드 변경시 확률 정보 업데이트 이벤트 리스너
+        modeInputs.forEach(input => {
+            input.addEventListener('change', updateProbDisplay);
+        });
 
         document.getElementById('calcForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // 입력값 가져오기
+            const mode = document.querySelector('input[name="mode"]:checked').value;
             const bc_now = parseInt(document.getElementById('bc_now').value);
             const nkr = parseInt(document.getElementById('nkr').value);
             let stage = parseInt(document.getElementById('stage').value);
 
+            // 스테이지 유효성 검사 (기본값 6)
             if (isNaN(stage) || stage < 1 || stage > 6) {
                 stage = 6;
             }
 
+            // 확률 배열 선택
+            const currentEP = mode === 'team' ? EP_TEAM : EP_VS;
+
+            // 계산
             const current_prob = bc_now / nkr;
-            const general_prob = EP[Math.min(stage, 6) - 1];
+            const general_prob = currentEP[stage - 1]; // 0-based index
             const decision = current_prob > general_prob;
 
+            // 결과 표시
+            document.getElementById('r_mode').textContent = mode === 'team' ? '팀대반' : '대반';
             document.getElementById('r_bc_now').textContent = bc_now;
             document.getElementById('r_nkr').textContent = nkr;
             document.getElementById('r_current_prob').textContent = (current_prob * 100).toFixed(2) + '%';
             document.getElementById('r_general_prob').textContent = (general_prob * 100).toFixed(2) + '%';
-            document.getElementById('r_decision').textContent = decision ? '✓ 예' : '✗ 아니오';
+            
+            const decisionSpan = document.getElementById('r_decision');
+            if (decision) {
+                decisionSpan.textContent = '✓ 예 (높음)';
+                decisionSpan.style.color = '#047857';
+                decisionSpan.style.fontWeight = 'bold';
+            } else {
+                decisionSpan.textContent = '✗ 아니오 (낮음)';
+                decisionSpan.style.color = '#c2410c';
+                decisionSpan.style.fontWeight = 'bold';
+            }
 
             const conclusionDiv = document.getElementById('conclusion');
             if (decision) {
@@ -332,6 +414,8 @@
 
         document.getElementById('resetBtn').addEventListener('click', function() {
             document.getElementById('calcForm').reset();
+            // 리셋 후에도 모드에 맞는 확률 텍스트 유지를 위해 업데이트 함수 호출
+            setTimeout(updateProbDisplay, 0); 
             document.getElementById('result').style.display = 'none';
         });
     </script>
