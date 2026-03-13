@@ -325,7 +325,7 @@
                     <div class="input-group">
                         <label for="nkr">현재 아이템 개수</label>
                         <input type="number" id="nkr" required min="1" placeholder="예: 142">
-                        <div class="input-hint">残り: n/N 에서의 n을 입력</div>
+                        <div class="input-hint">残り: n/N 에서의 n을 입력 // '계산하기' 버튼을 누르면 자동으로 10씩 줄어듭니다.</div>
                     </div>
 
                     <div class="input-group">
@@ -455,6 +455,11 @@
             }
 
             document.getElementById('result').style.display = 'block';
+
+            // 계산 후 현재 아이템 개수에서 10 차감 (대반, 팀대반 모두 적용)
+            const nkrInput = document.getElementById('nkr');
+            const newNkr = parseInt(nkrInput.value) - 10;
+            nkrInput.value = newNkr > 0 ? newNkr : 0;
         });
 
         // [수정된 부분] 초기화 버튼 클릭 시 숫자 입력칸만 비우기
